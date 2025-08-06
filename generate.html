@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>SPINTRIX | Prompt & Bài báo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #f0f0f0;
+      font-family: 'Courier New', monospace;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #00ff99;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border: 2px solid #00ff99;
+      background-color: #000;
+      color: #fff;
+      border-radius: 8px;
+      margin-bottom: 1.2rem;
+    }
+
+    button {
+      padding: 0.8rem 2rem;
+      font-size: 1rem;
+      background-color: #00ff99;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 2rem;
+    }
+
+    .note {
+      font-size: 0.9rem;
+      color: #ff5555;
+      margin-top: -0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: #00ccff;
+    }
+
+    .article {
+      padding: 1rem;
+      background-color: #1a1a1a;
+      margin-bottom: 1rem;
+      border-left: 5px solid #00ff99;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .article:hover {
+      background-color: #222;
+    }
+
+    .locked::after {
+      content: " ✅ Cần token";
+      color: #ffcc00;
+      float: right;
+    }
+
+    .unlocked::after {
+      content: " 🔓 Miễn phí";
+      color: #00ff99;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Viết Prompt để tạo ảnh</h1>
+
+  <input type="text" placeholder="Gõ prompt vào đây..." id="prompt">
+  <button onclick="generateImage()">Tạo Ảnh</button>
+  <div class="note">Prompt này sẽ được công khai. Muốn giữ riêng? Mua với 25 FAKEbit.</div>
+
+  <div class="section-title">🔎 Tìm bài báo</div>
+  <input type="text" placeholder="Nhập tên bài báo..." oninput="filterArticles()" id="search">
+
+  <div id="articleList">
+    <div class="article unlocked" onclick="openArticle('Cách prompt hoạt động', false)">Cách prompt hoạt động</div>
+    <div class="article locked" onclick="openArticle('Hướng dẫn prompt nâng cao', true)">Hướng dẫn prompt nâng cao</div>
+    <div class="article unlocked" onclick="openArticle('Lịch sử của AI nghệ thuật', false)">Lịch sử của AI nghệ thuật</div>
+    <div class="article locked" onclick="openArticle('Phân tích prompt ảo giác', true)">Phân tích prompt ảo giác</div>
+  </div>
+
+  <script>
+    function generateImage() {
+      const prompt = document.getElementById('prompt').value;
+      if (!prompt.trim()) {
+        alert("Bạn chưa nhập prompt 😭");
+        return;
+      }
+      alert("🧠 Đang xử lý prompt: " + prompt + "\n(Sẽ tích hợp AI sau)");
+    }
+
+    function filterArticles() {
+      const keyword = document.getElementById('search').value.toLowerCase();
+      const articles = document.querySelectorAll('.article');
+      articles.forEach(article => {
+        const title = article.textContent.toLowerCase();
+        article.style.display = title.includes(keyword) ? 'block' : 'none';
+      });
+    }
+
+    function openArticle(title, requiresToken) {
+      if (requiresToken) {
+        const confirmOpen = confirm(`Bài "${title}" cần 10 FAKEbit để đọc.\nBạn có muốn tiếp tục?`);
+        if (!confirmOpen) return;
+        alert("🔒 Đang kiểm tra token... (chưa tích hợp)");
+      } else {
+        alert(`📖 Mở bài miễn phí: "${title}"`);
+      }
+    }
+  </script>
+
+</body>
+</html>
