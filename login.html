@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng nhập | SPINTRIX</title>
+  <style>
+    body{margin:0;background:#0f0f0f;color:#eaeaea;font-family:monospace;display:flex;min-height:100vh}
+    .left{flex:1;display:flex;align-items:center;justify-content:center}
+    .art{max-width:460px;padding:32px;opacity:.9}
+    .right{flex:1;display:flex;align-items:center;justify-content:center;background:#121212}
+    .card{width:360px;background:#1b1b1b;border:1px solid #2a2a2a;border-radius:16px;padding:24px}
+    h2{margin:0 0 16px;color:#11f8a5}
+    input{width:100%;padding:12px 14px;margin:8px 0;background:#101010;color:#fff;border:1px solid #2d2d2d;border-radius:10px}
+    .btn{width:100%;padding:12px;border:0;border-radius:10px;background:#11f8a5;color:#06241c;font-weight:700;cursor:pointer}
+    .btn-outline{width:100%;padding:12px;border:1px solid #444;border-radius:10px;background:#111;color:#eaeaea;cursor:pointer}
+    small{color:#bdbdbd}
+  </style>
+</head>
+<body>
+  <div class="left"><img class="art" src="illustration.svg" alt="welcome"></div>
+
+  <div class="right">
+    <div class="card">
+      <h2>Đăng nhập</h2>
+      <input id="email" type="email" placeholder="Email"/>
+      <input id="password" type="password" placeholder="Mật khẩu"/>
+      <button class="btn" id="loginEmail">Đăng nhập</button>
+      <div style="height:10px"></div>
+      <button class="btn-outline" id="loginGoogle">Đăng nhập bằng Google</button>
+      <div style="margin-top:12px"><small>Chưa có tài khoản? <a href="#" id="register" style="color:#11f8a5">Đăng ký nhanh</a></small></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup,
+             signInWithEmailAndPassword, createUserWithEmailAndPassword } 
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getDatabase, ref, get, set } 
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtovIeMn5LWm0rLOJbRyxYum9ydZ7hYNc",
+      authDomain: "spintrix-630d4.firebaseapp.com",
+      databaseURL: "https://spintrix-630d4-default-rtdb.firebaseio.com",
+      projectId: "spintrix-630d4",
+      appId: "1:790871249905:web:69f9354b70b5c1bf742a50"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getDatabase(app);
+
+    // Nếu đã đăng nhập -> qua dashboard
+    onAuthStateChanged(auth, (user) => { if (user) location.href = "dashboard.html"; });
+
+    // Email/password
+    document.getElementById('loginEmail').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        location.href = "dashboard.html";
+      } catch(e) {
+        alert("Đăng nhập lỗi: " + e.message);
+      }
+    };
+
+    // Đăng ký nhanh
+    document.getElementById('register').onclick = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value;
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        // tạo fakebit = 0 nếu chưa có
+        await set(ref(db, `users/${cred.user.uid}`), { role: "user", fakebit: 0, name: email.split("@")[0] });
+        alert("Tạo tài khoản xong, đăng nhập...");
+      } catch(e) { alert("Đăng ký lỗi: " + e.message); }
+    };
+
+    // Google
+    document.getElementById('loginGoogle').onclick = async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        const cred = await signInWithPopup(auth, provider);
+        // nếu chưa có node user -> khởi tạo
+        const snap = await get(ref(db, `users/${cred.user.uid}`));
+        if (!snap.exists()) await set(ref(db, `users/${cred.user.uid}`), {
+          role:"user", fakebit:0, name: cred.user.displayName || "user"
+        });
+        location.href = "dashboard.html";
+      } catch(e) { alert("Google login lỗi: " + e.message); }
+    };
+  </script>
+</body>
+</html>
