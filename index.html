@@ -1,74 +1,48 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SPINTRIX| Prompt là dối trá</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      background-color: #0f0f0f;
-      color: #f0f0f0;
-      font-family: 'Courier New', monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-      padding: 1rem;
-    }
-
-    h1 {
-      font-size: 3rem;
-      color: #00ff99;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      max-width: 600px;
-      margin-bottom: 2rem;
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    .btn {
-      padding: 1rem 2rem;
-      font-size: 1rem;
-      background-color: #00ff99;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.2s ease-in-out;
-    }
-
-    .btn:hover {
-      background-color: #00cc88;
-    }
-
-    .warning {
-      color: #ff4444;
-      margin-top: 2rem;
-      font-style: italic;
-      font-size: 0.9rem;
-    }
+    body{margin:0;background:#0f0f0f;color:#eaeaea;font-family:monospace;display:flex;min-height:100vh}
+    .wrap{margin:auto;text-align:center;max-width:720px;padding:32px}
+    h1{color:#11f8a5;font-size:64px;letter-spacing:2px;margin:0 0 12px}
+    p{opacity:.9;line-height:1.7}
+    .btn{display:inline-block;margin-top:28px;padding:16px 28px;border-radius:12px;background:#11f8a5;color:#07261d;
+         border:0;cursor:pointer;font-weight:700}
+    .note{margin-top:28px;color:#ff6b6b;font-style:italic}
   </style>
 </head>
 <body>
-
-  <h1>SPINTRIX</h1>
-  <p>
-    AI tạo ảnh từ prompt bạn viết. Không hỗ trợ người cả tin.<br>
-    Prompt là của bạn, ý tưởng là của bạn. Tin hay không là việc của bạn.
-  </p>
-
-  <button class="btn" onclick="window.location.href='newtoday.html'">
-    Vào phòng viết prompt
-  </button>
-
-  <div class="warning">
-    ⚠️ Đây không phải nơi dành cho người mộng mơ hay mù quáng.
+  <div class="wrap">
+    <h1>SPINTRIX</h1>
+    <p>AI tạo ảnh từ prompt bạn viết. Prompt là của bạn, ý tưởng là của bạn. Tin hay không là việc của bạn.</p>
+    <button class="btn" id="enterBtn">Vào phòng viết prompt</button>
+    <div class="note">⚠️ Đây không phải nơi dành cho người mộng mơ hay mù quáng.</div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      appId: "YOUR_APP_ID"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById('enterBtn').onclick = () => {
+      // Nếu đã đăng nhập → vào trang chính; chưa đăng nhập → sang trang login
+      onAuthStateChanged(auth, (user) => {
+        if (user) window.location.href = "dashboard.html";
+        else window.location.href = "login.html";
+      });
+    };
+  </script>
 </body>
 </html>
